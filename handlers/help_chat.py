@@ -104,7 +104,7 @@ async def stop_cycle(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(
         "Вы вышли из чата.",
         reply_markup=get_keyboard(
-            "О МТУСИ/Контакты",
+            "О МТУСИ",
             "Как добраться",
             "Приёмная комиссия",
             "Общежитие",
