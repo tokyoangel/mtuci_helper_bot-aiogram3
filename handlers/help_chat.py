@@ -81,20 +81,41 @@ async def find_answers_for_user_message(session: AsyncSession, user_message):
     keywords_query = await orm_get_keywords(session)
 
     # 2. Находим ключевые слова, которые присутствуют в сообщении пользователя
-    found_keyword_ids = None# [keyword.id for keyword in keywords_query if keyword.word in user_message] 
+    found_keyword_ids = [keyword.id for keyword in keywords_query if keyword.word in user_message] 
 
-    # print("found_keyword_ids {found_keyword_ids}")
-    answer = await generate_answer(user_message)
+    #print(f"!!!!!!!!!!!!!!!!!!!!found_keyword_ids {found_keyword_ids[0]}")
+    
     if not found_keyword_ids:
-        return answer
-    answers_query_id = await orm_get_keywords_answers(session)
-    print("answers_query_id = {answers_query_id}")
+        return await generate_answer(user_message)
+    if found_keyword_ids == None:
+        return await generate_answer(user_message)
+    #answers_query_id = await orm_get_keyword_answer(session,found_keyword_ids[0])
+    #print(f"!!!!!!!!!!!!!!!!answers_query_id = {answers_query_id}")
     # 3. Находим все id ответов, связанные с найденными ключевыми словами
-    for each_key in found_keyword_ids:
-            answers_query_id = await orm_get_keyword_answer(session, each_key)
-            final_answers = await orm_get_answer1(session,answers_query_id)
+    # for each_key in found_keyword_ids:
+    #         answers_query_id = await orm_get_keyword_answer(session, each_key)
+    #         final_answers = await orm_get_answer1(session,answers_query_id)
+    for each_key2 in await orm_get_keywords_answers(session):
+        # print(f"-------!!!!!!!!!!!!!!!!!_________{each_key2.answer_id}")
+        # print(f"-------?????????????????_________{each_key2.keyword_id}")
+        if found_keyword_ids[0] == each_key2.keyword_id:
+            for answer in await orm_get_answers(session):
+                if answer.id == each_key2.answer_id:
+                    return answer.answer
+            #print(f"-------------------------------------------------{final_answers}")
+    
 
-    return answer  # final_answers
+
+
+# @group_adm_router.message()
+# async def send_to_user(message: types.Message, session: AsyncSession):
+#     if message.reply_to_message:
+#         for questions in await orm_get_questions(session):
+#             if questions.message_id == message.reply_to_message.message_id:
+#                 await bot.send_message(
+#                     questions.chat_id, f"Ответ на Ваше обращение: {message.text}"
+#                 )
+
 
 
 @send_to_group_router.callback_query(F.data.startswith("stop_"))

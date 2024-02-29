@@ -21,8 +21,8 @@ async def where_def(message: types.Message | CallbackQuery):
 
     await message.answer(
         whereami_txt.whereami,
-        reply_markup=get_callback_btns(
-            btns={"Главный кампус": "camp_main", "Второй кампус": "camp_second"}
+        reply_markup=get_inlineMix_btns(
+            btns={"Главный кампус": "camp_main", "Второй кампус": "camp_second","Карта помещений":"https://mtuci-map.vercel.app/"}
         ),
     )
 
